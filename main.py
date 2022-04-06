@@ -24,8 +24,11 @@ if "__main__" == __name__:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos_x, pos_y = event.pos
-                print(pos_x, pos_y)
+                col = int(pos_x // (WIDTH/3))
+                row = int(pos_y // (HEIGHT/3))
+                print(col)
         
         pygame.display.update()            
