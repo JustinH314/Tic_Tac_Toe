@@ -36,11 +36,85 @@ def draw_cross(row, col):
                      STROKE_WIDTH)
 #:%s/pattern/replace/g 
 
-def draw_sign(player, row, col):
-    if player == 0:
+def draw_sign(row, col):
+    if player == 1:
         draw_circle(row, col)
-    elif player == 1:
+    elif player == 2:
         draw_cross(row, col)
+
+def is_valid_move(row, col):
+    # 0 -> None
+    # 1 -> O
+    # 2 -> X
+    return board[row][col] == 0
+
+def create_board():
+    # [[1, 2, 3],
+    #  [4, 5, 6],
+    #  [7, 8, 9]]
+    board = []
+    for i in range(3):
+        row = []
+        
+        for j in range(3):
+            row.append(0)
+        
+        board.append(row)
+    return board    
+
+def move(row, col):
+    board[row][col] = player
+
+def is_player_win():
+    win = False
+    # check rows
+    for i in range(3):
+        win = True
+        for j in range(3):
+            if player != board[i][j]:
+                win = False
+                break
+        if win:
+            return win
+    
+    # check cols
+    for i in range(3):
+        win = True
+        for j in range(3):
+            if player != board[j][i]:
+                win = False
+                break
+        if win:
+            return win
+    # check diagonals
+    win = True
+    for j in range(3):
+        if player != board[j][j]:
+            win = False
+            break
+    if win:
+        return win
+    
+    win = True
+    for e, i in enumerate(list(range(2, -1, -1))):
+        if player != board[e][i]:
+            win = False
+            break
+    if win:
+        return win
+
+def is_board_filled():
+    # for i in range(3):
+    #     for j in range(3):
+    #         if board[i][j] == 0:
+    #             return False
+    # return True
+    for row in board:
+        for sign in row:
+            if sign == 0:
+                return False
+    return True 
+
 
 if "__main__" == __name__:
     pygame.init()
@@ -48,6 +122,8 @@ if "__main__" == __name__:
     pygame.display.set_caption(GAME_TITLE)
     screen.fill(BG_COLOR)
     draw_line()
+    board = create_board()
+    player = 1
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -57,6 +133,24 @@ if "__main__" == __name__:
                 pos_x, pos_y = event.pos
                 col = int(pos_x // (WIDTH/3))
                 row = int(pos_y // (HEIGHT/3))
-                print(row, col)
-                draw_cross(row, col)
+                # print(row, col)
+                # draw_cross(row, col)
+                if is_valid_move(row, col):
+                    print("valid")
+                    move(row, col)
+                    draw_sign(row, col)
+                    
+                    if is_player_win():
+                        print(f"Player{player} wins")
+                        sys.exit()
+                    
+                    if is_board_filled():
+                        print("Tie")
+                        sys.exit()
+                    
+                    # player = 3 - player
+                    player = 2 if player == 1 else 1
+                else:
+                    print("fail")
+
         pygame.display.update()            
