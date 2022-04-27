@@ -70,6 +70,7 @@ if "__main__" == __name__:
     # initialization
     pygame.init()
     pygame.mouse.set_visible(False)
+    clock = pygame.time.Clock()
     screen = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption("Tic Tac Toe")
 
@@ -105,3 +106,4 @@ if "__main__" == __name__:
         screen.blit(board.surface, (0, 0))
         group.draw(screen)
         group.update()
+        clock.tick(60)
