@@ -7,6 +7,9 @@ import sys
 # game settings
 ASSETS_DIR = "assets"
 BACKGROUND_IMAGE = "background.jpg"
+BOARD_IMAGE = "board.png"
+CIRCLE_IMAGE = "circle.png"
+CROSS_IMAGE = "cross.png"
 CROSSHAIR_IMAGE = "crosshair 2.png"
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
@@ -22,6 +25,12 @@ class Crosshair(pygame.sprite.Sprite):
     def update(self):
         self.rect.center = pygame.mouse.get_pos()
 
+class Sign(pygame.sprite.Sprite):
+    def __init__(self, filename):
+        super().__init__()
+        self.image = pygame.image.load(Path(ASSETS_DIR) / filename)
+        self.rect = self.image.get_rect()
+
 
 if "__main__" == __name__:
     running = True
@@ -33,8 +42,12 @@ if "__main__" == __name__:
     pygame.display.set_caption("Tic Tac Toe")
 
     background = pygame.image.load(Path(ASSETS_DIR) / BACKGROUND_IMAGE)
+    board = pygame.image.load(Path(ASSETS_DIR) / BOARD_IMAGE)
+    board = pygame.transform.scale(board, (600, 600))
     group = pygame.sprite.Group()
     crosshair = Crosshair(CROSSHAIR_IMAGE)
+    circle = Sign(CIRCLE_IMAGE)
+    group.add(circle)
     group.add(crosshair)
 
     while running:
@@ -45,5 +58,6 @@ if "__main__" == __name__:
         
         pygame.display.flip()
         screen.blit(background, (0, 0))
+        screen.blit(board, (0, 0))
         group.draw(screen)
         group.update()

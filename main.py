@@ -10,6 +10,15 @@ STROKE_WIDTH = 5
 STROKE_COLOR = (255, 255, 255)
 SIGN_COLOR = (246, 174, 45)
 CROSS_MARGIN = 40
+
+class Board:
+    def __init__(self, n: int):
+        self.n = n
+
+class Player:
+    def __init__(self, sign: int):
+        self.sign = sign
+
 def draw_line():
     pygame.draw.line(screen, STROKE_COLOR, (0, HEIGHT/3), (WIDTH, HEIGHT/3), STROKE_WIDTH)
     pygame.draw.line(screen, STROKE_COLOR, (0, HEIGHT/3*2), (WIDTH, HEIGHT/3*2), STROKE_WIDTH)
