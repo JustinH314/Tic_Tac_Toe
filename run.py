@@ -41,6 +41,28 @@ class Board:
         self.size = size
         self.surface = pygame.image.load(Path(ASSETS_DIR) / BOARD_IMAGE)
         self.surface = pygame.transform.scale(self.surface, (size, size))
+        self.status = create_2D()
+    
+    def is_valid_move(self, row, col):
+        return self.status[row][col] == 0
+
+    def move(self, row, col, player):
+        self.status[row][col] = player
+
+
+def create_2D():
+    # [[1, 2, 3],
+    #  [4, 5, 6],
+    #  [7, 8, 9]]
+    x = []
+    for i in range(3):
+        row = []
+        
+        for j in range(3):
+            row.append(0)
+        
+        x.append(row)
+    return x    
 
 if "__main__" == __name__:
     running = True
@@ -69,10 +91,15 @@ if "__main__" == __name__:
         
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos_x, pos_y = event.pos
+                if not pos_x <= board.size and pos_y <= board.size:
+                    continue
                 (_, _, width, height) = board.surface.get_rect()
                 col = int(pos_x // (width/3))
                 row = int(pos_y // (height/3))
-                print(width, height)
+
+                if board.is_valid_move(row, col):
+                    print(board.status)
+
         pygame.display.flip()
         screen.blit(background, (0, 0))
         screen.blit(board.surface, (0, 0))
