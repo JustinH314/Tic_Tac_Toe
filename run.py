@@ -1,10 +1,8 @@
 # import
 from pathlib import Path
-from re import X
-from tkinter import Y
 import pygame
+import random
 import sys
-
 
 # game settings
 ASSETS_DIR = "assets"
@@ -49,6 +47,9 @@ class Board:
     def move(self, row, col, player):
         self.status[row][col] = player
 
+def init_player(players):
+    # return random.randint(*players)
+    return 2
 
 def create_2D():
     # [[1, 2, 3],
@@ -76,13 +77,18 @@ if "__main__" == __name__:
 
     background = pygame.image.load(Path(ASSETS_DIR) / BACKGROUND_IMAGE)
     board = Board()
+    player = init_player([1, 2])
+    sign_mapping = {
+        1: CIRCLE_IMAGE,
+        2: CROSS_IMAGE
+    }
     group = pygame.sprite.Group()
     crosshair = Crosshair(CROSSHAIR_IMAGE)
+    group.add(crosshair)
     # circle = Sign(CIRCLE_IMAGE, (100, 100))
     # cross = Sign(CROSS_IMAGE, (, x))
     # group.add(circle)
     # group.add(cross)
-    group.add(crosshair)
 
     while running:
         for event in pygame.event.get():
@@ -92,18 +98,24 @@ if "__main__" == __name__:
         
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos_x, pos_y = event.pos
-                if not pos_x <= board.size and pos_y <= board.size:
+                print(f"pos_x {pos_x}, pos_y {pos_y}")
+                if not (pos_x <= board.size and pos_y <= board.size):
                     continue
                 (_, _, width, height) = board.surface.get_rect()
                 col = int(pos_x // (width/3))
                 row = int(pos_y // (height/3))
+                print(f"row {row}, col {col}")
 
                 if board.is_valid_move(row, col):
+                    board.move(row, col, player)
+                    sign = Sign(sign_mapping[player], (col*CELL_DELTA+CELL_ORIGIN, row*CELL_DELTA+CELL_ORIGIN))
+                    group.add(sign)
+                    group.add(crosshair)
                     print(board.status)
 
-        pygame.display.flip()
         screen.blit(background, (0, 0))
         screen.blit(board.surface, (0, 0))
         group.draw(screen)
         group.update()
         clock.tick(60)
+        pygame.display.flip()
