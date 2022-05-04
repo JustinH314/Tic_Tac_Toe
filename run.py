@@ -3,6 +3,7 @@ from pathlib import Path
 import pygame
 import random
 import sys
+import time
 
 # game settings
 ASSETS_DIR = "assets"
@@ -46,10 +47,55 @@ class Board:
 
     def move(self, row, col, player):
         self.status[row][col] = player
+        return 2 if player == 1 else 1
+    
+    def is_player_win(self, player) -> bool:
+        win = False
+        # check rows
+        for i in range(3):
+            win = True
+            for j in range(3):
+                if player != self.status[i][j]:
+                    win = False
+                    break
+            if win:
+                return win
+        
+        # check cols
+        for i in range(3):
+            win = True
+            for j in range(3):
+                if player != self.status[j][i]:
+                    win = False
+                    break
+            if win:
+                return win
+        # check diagonals
+        win = True
+        for j in range(3):
+            if player != self.status[j][j]:
+                win = False
+                break
+        if win:
+            return win
+        
+        win = True
+        for e, i in enumerate(list(range(2, -1, -1))):
+            if player != self.status[e][i]:
+                win = False
+                break
+        if win:
+            return win
+    
+    def is_board_filled(self): 
+        for row in self.status:
+            for sign in row:
+                if sign == 0:
+                    return False
+        return True 
 
 def init_player(players):
-    # return random.randint(*players)
-    return 2
+    return random.randint(*players)
 
 def create_2D():
     # [[1, 2, 3],
@@ -107,11 +153,20 @@ if "__main__" == __name__:
                 print(f"row {row}, col {col}")
 
                 if board.is_valid_move(row, col):
-                    board.move(row, col, player)
-                    sign = Sign(sign_mapping[player], (col*CELL_DELTA+CELL_ORIGIN, row*CELL_DELTA+CELL_ORIGIN))
+                    current_player = player
+                    sign = Sign(sign_mapping[current_player], (col*CELL_DELTA+CELL_ORIGIN, row*CELL_DELTA+CELL_ORIGIN))
+                    player = board.move(row, col, current_player)
                     group.add(sign)
                     group.add(crosshair)
                     print(board.status)
+                    if board.is_player_win(current_player):
+                        print(f"Player {current_player} wins")
+                        time.sleep(3)
+                        sys.exit()
+                    if board.is_board_filled():
+                        print("Draw")
+                        time.sleep(3)
+                        sys.exit()
 
         screen.blit(background, (0, 0))
         screen.blit(board.surface, (0, 0))
